@@ -43,6 +43,24 @@ public class ItemService {
                 .collect(Collectors.toList());
 
     }
-}
 
+
+    public void deletePost(Long itemId) {
+        Item finditem = itemRepository.findById(itemId).orElseThrow(NullPointerException::new);
+        itemRepository.delete(finditem);
+    }
+        }
+
+
+    public ItemResponseDto getItem(Long itemId){
+        Item item = itemRepository.findById(itemId).orElse(null);
+        return new ItemResponseDto(item);
+    }
+
+    public List<ItemResponseDto> getAllItems() {
+        return itemRepository.findAllByOrderByCreatedAtDesc().stream()
+                .map(ItemResponseDto::new)
+                .collect(Collectors.toList());
+    }
+}
 
