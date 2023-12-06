@@ -3,6 +3,7 @@ package com.raincloud.sunlightmarket.item.controller;
 import com.raincloud.sunlightmarket.item.dto.ItemAllResponseDto;
 import com.raincloud.sunlightmarket.item.dto.ItemRequestDto;
 import com.raincloud.sunlightmarket.item.dto.ItemResponseDto;
+import com.raincloud.sunlightmarket.item.dto.ItemUpdateRequest;
 import com.raincloud.sunlightmarket.item.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,19 +19,35 @@ public class ItemController {
 
     private final ItemService itemService;
 
+
     //상품 등록
     @PostMapping("/add")
     public ResponseEntity<ItemResponseDto> addItem(
             @RequestBody ItemRequestDto requestDto
+
     ) {
         try {
             ItemResponseDto responseDto = itemService.addItem(requestDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
-        }catch (RejectedExecutionException | IllegalArgumentException ex){
+        } catch (RejectedExecutionException | IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(new ItemResponseDto(ex.getMessage(), HttpStatus.BAD_REQUEST.value()));
 
         }
     }
+
+
+    @PutMapping("/items/{itemsId)")
+    public ResponseEntity<Void> updatePost(
+        @PathVariable Long itemId,
+        @RequestBody ItemUpdateRequest request
+    ) {
+        itemService.updateItem(itemId, request.getTitle());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+
+
+
 
     //선택 상품 조회
     @GetMapping("/{itemId}")
@@ -67,4 +84,5 @@ public class ItemController {
             return ResponseEntity.badRequest().body(new ItemAllResponseDto(ex.getMessage(), HttpStatus.BAD_REQUEST.value()));
         }
     }
+
 }
