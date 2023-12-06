@@ -31,6 +31,17 @@ public class ItemService {
     public void updateItem(Long itemId, String title) {
         Item findItem = itemRepository.findById(itemId).orElseThrow(NullPointerException::new);
         findItem.updateTitle(title);
+
+    public ItemResponseDto getItem(Long itemId){
+        Item item = itemRepository.findById(itemId).orElse(null);
+        return new ItemResponseDto(item);
+    }
+
+    public List<ItemResponseDto> getAllItems() {
+        return itemRepository.findAllByOrderByCreatedAtDesc().stream()
+                .map(ItemResponseDto::new)
+                .collect(Collectors.toList());
+
     }
 
 
