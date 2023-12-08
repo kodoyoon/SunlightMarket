@@ -22,10 +22,10 @@ public class LikeService {
   @Transactional
   public void createLikeForItem(Long userId , Long itemId) {
     Item item = itemRepository.findById(itemId)
-        .orElseThrow(() -> new EntityNotFoundException("TIL을 찾을 수 없습니다."));
+        .orElseThrow(() -> new EntityNotFoundException("ITEM 을 찾을 수 없습니다."));
 
     User user = userRepository.findById(userId)
-        .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+        .orElseThrow(() -> new EntityNotFoundException("사용자 를 찾을 수 없습니다."));
 
     if (!likeRepository.existsByUserAndItem(user, item)) {
       likeRepository.save(Like.builder().user(user).item(item).build());
@@ -38,7 +38,7 @@ public class LikeService {
         .orElseThrow(() -> new EntityNotFoundException("ITEM 을 찾을 수 없습니다."));
 
     User user = userRepository.findById(userId)
-        .orElseThrow(() -> new EntityNotFoundException("ITEM 을 찾을 수 없습니다."));
+        .orElseThrow(() -> new EntityNotFoundException("사용자 를 찾을 수 없습니다."));
 
             if(likeRepository.existsByUserAndItem(user,item)) {
                 likeRepository.deleteByUserAndItem(user,item);
