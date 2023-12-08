@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.concurrent.RejectedExecutionException;
 
 @Getter
 @Entity
@@ -43,10 +44,7 @@ public class Item extends Timestamped {
     private String address;
 
     @Column
-    private Boolean completed;
-
-    @Column
-    private Boolean delivered;
+    private ItemStatus itemstatus;
 
     @OneToMany(mappedBy = "item",cascade = CascadeType.PERSIST,orphanRemoval = true)
     private List<Order> orders;
@@ -58,8 +56,7 @@ public class Item extends Timestamped {
         price = requestDto.getPrice();
         content = requestDto.getContent();
         address = requestDto.getAddress();
-        completed = false;
-        delivered = false;
+        itemstatus = ItemStatus.ON_SALE;
     }
     public void update(ItemUpdateRequest requestDto) {
         title = requestDto.getTitle();
@@ -67,5 +64,22 @@ public class Item extends Timestamped {
         price = requestDto.getPrice();
         content = requestDto.getContent();
         address = requestDto.getAddress();
+    }
+
+    public void complete(){
+        if(!this.itemstatus.equals(ItemStatus.ON_SALE)){
+            throw new RejectedExecutionException("이미 주문이 완료된 아이템입니다");
+        }
+        this.itemstatus = ItemStatus.SOLD;
+    }
+
+    public void confirmDelivery(){
+        if(this.itemstatus.equals(ItemStatus.ON_SALE)){
+            throw new RejectedExecutionException("주문이 완료되지 않은 아이템입니다");
+        }
+        if(this.itemstatus.equals(ItemStatus.DELIVERED)){
+            throw new RejectedExecutionException("이미 배송이 완료된 아이템입니다");
+        }
+        this.itemstatus = ItemStatus.DELIVERED;
     }
 }
