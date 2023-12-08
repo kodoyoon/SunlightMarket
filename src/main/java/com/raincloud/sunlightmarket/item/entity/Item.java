@@ -3,6 +3,7 @@ package com.raincloud.sunlightmarket.item.entity;
 import com.raincloud.sunlightmarket.global.entity.Timestamped;
 import com.raincloud.sunlightmarket.item.dto.ItemRequestDto;
 import com.raincloud.sunlightmarket.item.dto.ItemUpdateRequest;
+import com.raincloud.sunlightmarket.like.entity.Like;
 import com.raincloud.sunlightmarket.order.entity.Order;
 import com.raincloud.sunlightmarket.user.entity.Seller;
 import com.raincloud.sunlightmarket.user.entity.User;
@@ -48,6 +49,9 @@ public class Item extends Timestamped {
 
     @OneToMany(mappedBy = "item",cascade = CascadeType.PERSIST,orphanRemoval = true)
     private List<Order> orders;
+
+    @OneToMany(mappedBy = "item")
+    private List<Like> likes;
 
     public Item(ItemRequestDto requestDto, Seller seller){
         this.seller = seller;

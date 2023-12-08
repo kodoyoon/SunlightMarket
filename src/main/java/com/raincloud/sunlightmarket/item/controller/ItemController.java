@@ -6,6 +6,7 @@ import com.raincloud.sunlightmarket.item.dto.ItemAllResponseDto;
 import com.raincloud.sunlightmarket.item.dto.ItemRequestDto;
 import com.raincloud.sunlightmarket.item.dto.ItemResponseDto;
 import com.raincloud.sunlightmarket.item.dto.ItemUpdateRequest;
+import com.raincloud.sunlightmarket.item.entity.Item;
 import com.raincloud.sunlightmarket.item.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.parser.Authorization;
@@ -14,7 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,43 +29,43 @@ public class ItemController {
     //상품 등록
     @PostMapping("/add")
     public ApiResponse<ItemResponseDto> addItem(
-            @RequestBody ItemRequestDto requestDto,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+        @RequestBody ItemRequestDto requestDto,
+        @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         try {
             ItemResponseDto responseDto = itemService.addItem(requestDto, userDetails.getUser());
-            return new ApiResponse<ItemResponseDto>(HttpStatus.CREATED.value(),"아이템 추가 성공했습니다",responseDto);
-        }catch (RejectedExecutionException | IllegalArgumentException | NullPointerException ex){
-            return new ApiResponse<ItemResponseDto>(HttpStatus.BAD_REQUEST.value(),ex.getMessage());
+            return new ApiResponse<ItemResponseDto>(HttpStatus.CREATED.value(), "아이템 추가 성공했습니다", responseDto);
+        } catch (RejectedExecutionException | IllegalArgumentException | NullPointerException ex) {
+            return new ApiResponse<ItemResponseDto>(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
         }
     }
 
     //상품 업데이트
     @PutMapping("")
     public ApiResponse<ItemResponseDto> updatePost(
-            @RequestParam Long id,
-            @RequestBody ItemUpdateRequest request,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+        @RequestParam Long id,
+        @RequestBody ItemUpdateRequest request,
+        @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         try {
             ItemResponseDto responseDto = itemService.updateItem(id, request, userDetails.getUser());
-            return new ApiResponse<ItemResponseDto>(HttpStatus.OK.value(),"아이템 수정 성공했습니다",responseDto);
-        }catch (RejectedExecutionException | IllegalArgumentException | NullPointerException ex){
-            return new ApiResponse<ItemResponseDto>(HttpStatus.BAD_REQUEST.value(),ex.getMessage());
+            return new ApiResponse<ItemResponseDto>(HttpStatus.OK.value(), "아이템 수정 성공했습니다", responseDto);
+        } catch (RejectedExecutionException | IllegalArgumentException | NullPointerException ex) {
+            return new ApiResponse<ItemResponseDto>(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
         }
 
     }
 
     @DeleteMapping("")
     public ApiResponse<Void> deletePost(
-            @RequestParam Long id,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
-    ){
+        @RequestParam Long id,
+        @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
         try {
             itemService.deletePost(id, userDetails.getUser());
-            return new ApiResponse<Void>(HttpStatus.OK.value(),"아이템 삭제 성공했습니다");
-        }catch (RejectedExecutionException | IllegalArgumentException | NullPointerException ex){
-            return new ApiResponse<Void>(HttpStatus.BAD_REQUEST.value(),ex.getMessage());
+            return new ApiResponse<Void>(HttpStatus.OK.value(), "아이템 삭제 성공했습니다");
+        } catch (RejectedExecutionException | IllegalArgumentException | NullPointerException ex) {
+            return new ApiResponse<Void>(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
         }
     }
 
@@ -70,34 +73,51 @@ public class ItemController {
 
     @GetMapping("/read/{itemId}")
     public ApiResponse<ItemResponseDto> getItem(
-            @PathVariable Long itemId
+        @PathVariable Long itemId
     ) {
         try {
             ItemResponseDto responseDto = itemService.getItem(itemId);
-            return new ApiResponse<ItemResponseDto>(HttpStatus.OK.value(),"아이템 조회에 성공했습니다",responseDto);
-        }catch (RejectedExecutionException | IllegalArgumentException | NullPointerException ex){
-            return new ApiResponse<ItemResponseDto>(HttpStatus.BAD_REQUEST.value(),ex.getMessage());
+            return new ApiResponse<ItemResponseDto>(HttpStatus.OK.value(), "아이템 조회에 성공했습니다", responseDto);
+        } catch (RejectedExecutionException | IllegalArgumentException | NullPointerException ex) {
+            return new ApiResponse<ItemResponseDto>(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
         }
     }
 
     //전체 상품 조회
     @GetMapping("/read")
     public ApiResponse<ItemAllResponseDto> getItems(
-            @RequestParam String type
+        @RequestParam String type
     ) {
-        if(type.equals("All")){ return getAllItems();}
-        else if(type.equals("Myselect")){return new ApiResponse<ItemAllResponseDto>(HttpStatus.BAD_REQUEST.value(),"myselect");}
-        else{return new ApiResponse<ItemAllResponseDto>(HttpStatus.BAD_REQUEST.value(),"올바르지 않은 요청입니다");}
+        if (type.equals("All")) {
+            return getAllItems();
+        } else if (type.equals("Myselect")) {
+            return getLikedItems();
+        } else {
+            return new ApiResponse<ItemAllResponseDto>(HttpStatus.BAD_REQUEST.value(), "올바르지 않은 요청입니다");
+        }
     }
 
-    public ApiResponse<ItemAllResponseDto> getAllItems()
-    {
+    public ApiResponse<ItemAllResponseDto> getAllItems() {
         try {
             ItemAllResponseDto responseDto = new ItemAllResponseDto();
             responseDto.setItemResponseDtos(itemService.getAllItems());
-            return new ApiResponse<ItemAllResponseDto>(HttpStatus.OK.value(),"아이템 조회에 성공했습니다",responseDto);
-        }catch (RejectedExecutionException | IllegalArgumentException | NullPointerException ex){
-            return new ApiResponse<ItemAllResponseDto>(HttpStatus.BAD_REQUEST.value(),ex.getMessage());
+            return new ApiResponse<ItemAllResponseDto>(HttpStatus.OK.value(), "아이템 조회에 성공했습니다", responseDto);
+        } catch (RejectedExecutionException | IllegalArgumentException | NullPointerException ex) {
+            return new ApiResponse<ItemAllResponseDto>(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
         }
+    }
+
+
+    //좋아요를 누른 아이템 조회
+
+    public ApiResponse<ItemAllResponseDto> getLikedItems() {
+        try {
+            ItemAllResponseDto responseDto = new ItemAllResponseDto();
+            responseDto.setItemResponseDtos(itemService.getAllItems());
+            return new ApiResponse<ItemAllResponseDto>(HttpStatus.OK.value(), "좋아요 한 아이템 조회에 성공했습니다", responseDto);
+        } catch (RejectedExecutionException | IllegalArgumentException | NullPointerException ex) {
+            return new ApiResponse<ItemAllResponseDto>(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+        }
+
     }
 }

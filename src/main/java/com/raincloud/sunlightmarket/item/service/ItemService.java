@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.stream.Collectors;
@@ -55,6 +56,18 @@ public class ItemService {
                 .collect(Collectors.toList());
     }
 
+    public List<ItemResponseDto> getLikedItems() {
+        List<ItemResponseDto> responseDtoList = new ArrayList<>();
+         itemRepository.findAllByOrderByModifiedAtDesc().forEach(
+             Item -> {
+                 if (Item.getLikes().isEmpty()) {
+                     responseDtoList.add(new ItemResponseDto(Item));
+                 }
+             }
+          );
+         return responseDtoList;
+    }
+
     private Item getUserItem(Long itemId, User user){
         Item item = itemRepository.findById(itemId).orElseThrow(()-> new NullPointerException("해당 id로 아이템을 찾을 수 없습니다."));
         Seller seller = user.getSeller();
@@ -63,5 +76,7 @@ public class ItemService {
         }
         return item;
     }
+
+
 }
 
