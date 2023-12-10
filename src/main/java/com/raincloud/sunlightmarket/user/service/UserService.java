@@ -7,7 +7,7 @@ import com.raincloud.sunlightmarket.item.dto.ItemResponseDto;
 import com.raincloud.sunlightmarket.review.toseller.dto.response.CreateReviewToSellerResponseDto;
 import com.raincloud.sunlightmarket.user.dto.request.MyProfileRequestDto;
 import com.raincloud.sunlightmarket.user.dto.request.PasswordRequestDto;
-import com.raincloud.sunlightmarket.user.dto.request.SingUpRequestDto;
+import com.raincloud.sunlightmarket.user.dto.request.SignUpRequestDto;
 import com.raincloud.sunlightmarket.user.dto.response.MyProfileResponseDto;
 import com.raincloud.sunlightmarket.user.dto.response.SignUpResponseDto;
 import com.raincloud.sunlightmarket.user.dto.response.UserProfileResponseDto;
@@ -36,7 +36,7 @@ public class UserService {
 
     private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
-    public SignUpResponseDto signUp(SingUpRequestDto singUpRequestDto) {
+    public SignUpResponseDto signUp(SignUpRequestDto singUpRequestDto) {
 
         String nickname = singUpRequestDto.getNickname();
         String password = passwordEncoder.encode(singUpRequestDto.getPassword());

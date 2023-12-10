@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class SingUpRequestDto {
+public class SignUpRequestDto {
 
     private final String nickname;
     private final String password;
@@ -16,7 +16,7 @@ public class SingUpRequestDto {
     private String adminToken = "";
 
     @Builder
-    public SingUpRequestDto(final String nickname, final String password, final String email, final String intro) {
+    public SignUpRequestDto(final String nickname, final String password, final String email, final String intro) {
         this.nickname = nickname;
         this.password = password;
         this.email = email;
