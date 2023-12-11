@@ -6,7 +6,7 @@ import com.raincloud.sunlightmarket.global.jwt.JwtUtil;
 import com.raincloud.sunlightmarket.global.security.UserDetailsImpl;
 import com.raincloud.sunlightmarket.user.dto.request.MyProfileRequestDto;
 import com.raincloud.sunlightmarket.user.dto.request.PasswordRequestDto;
-import com.raincloud.sunlightmarket.user.dto.request.SingUpRequestDto;
+import com.raincloud.sunlightmarket.user.dto.request.SignUpRequestDto;
 import com.raincloud.sunlightmarket.user.dto.response.MyProfileResponseDto;
 import com.raincloud.sunlightmarket.user.dto.response.SignUpResponseDto;
 import com.raincloud.sunlightmarket.user.dto.response.UserProfileResponseDto;
@@ -32,7 +32,7 @@ public class UserController {
     private final KakaoService kakaoService;
 
     @PostMapping("/signup")
-    public ApiResponse<SignUpResponseDto> signUp(@RequestBody SingUpRequestDto requestDto) {
+    public ApiResponse<SignUpResponseDto> signUp(@RequestBody SignUpRequestDto requestDto) {
         System.out.println("controller");
         SignUpResponseDto responseDto = userService.signUp(requestDto);
         return new ApiResponse<>(HttpStatus.CREATED.value(),"회원가입 성공",responseDto);

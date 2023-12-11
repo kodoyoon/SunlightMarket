@@ -7,7 +7,7 @@ import com.raincloud.sunlightmarket.item.dto.ItemResponseDto;
 import com.raincloud.sunlightmarket.review.toseller.dto.response.CreateReviewToSellerResponseDto;
 import com.raincloud.sunlightmarket.user.dto.request.MyProfileRequestDto;
 import com.raincloud.sunlightmarket.user.dto.request.PasswordRequestDto;
-import com.raincloud.sunlightmarket.user.dto.request.SingUpRequestDto;
+import com.raincloud.sunlightmarket.user.dto.request.SignUpRequestDto;
 import com.raincloud.sunlightmarket.user.dto.response.MyProfileResponseDto;
 import com.raincloud.sunlightmarket.user.dto.response.SignUpResponseDto;
 import com.raincloud.sunlightmarket.user.dto.response.UserProfileResponseDto;
@@ -36,25 +36,25 @@ public class UserService {
 
     private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
-    public SignUpResponseDto signUp(SingUpRequestDto singUpRequestDto) {
+    public SignUpResponseDto signUp(SignUpRequestDto signUpRequestDto) {
 
-        String nickname = singUpRequestDto.getNickname();
-        String password = passwordEncoder.encode(singUpRequestDto.getPassword());
+        String nickname = signUpRequestDto.getNickname();
+        String password = passwordEncoder.encode(signUpRequestDto.getPassword());
 
         Optional<User> checkNickname = userRepository.findByNickname(nickname);
         if (checkNickname.isPresent()) {
             throw new IllegalArgumentException("중복된 닉네임이 존재합니다.");
         }
 
-        String email = singUpRequestDto.getEmail();
+        String email = signUpRequestDto.getEmail();
         Optional<User> checkEmail = userRepository.findByEmail(email);
         if (checkEmail.isPresent()) {
             throw new IllegalArgumentException("중복된 Email 입니다.");
         }
 
         UserRoleEnum roleEnum = UserRoleEnum.USER;
-        if (singUpRequestDto.isAdmin()) {
-            if (!ADMIN_TOKEN.equals(singUpRequestDto.getAdminToken())) {
+        if (signUpRequestDto.isAdmin()) {
+            if (!ADMIN_TOKEN.equals(signUpRequestDto.getAdminToken())) {
                 throw new IllegalArgumentException("관리자 암호가 일치하지 않아 불가능합니다.");
             }
             roleEnum = UserRoleEnum.ADMIN;
@@ -64,7 +64,7 @@ public class UserService {
             .nickname(nickname)
             .password(password)
             .email(email)
-            .intro(singUpRequestDto.getIntro())
+            .intro(signUpRequestDto.getIntro())
             .role(roleEnum)
             .build();
         userRepository.save(user);
